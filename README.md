@@ -128,7 +128,7 @@ At this point, you know what you need for the next lab, so you can skip ahead.  
 
 ## Depth-first search
 
-There are several ways to might reasonably traverse a tree, each with different applications.  You can get an overview of the options here](), but we'll start with depth-first search, or DFS.  DFS starts at the root of the tree and selects the first child.  If the child has children, it selects the first child again.  When it gets to a node with no children, it backtracks, moving up the tree to the parent node, where it selects the next child if there is one; otherwise it backtracks again.  When it has explored the last child of the root, it's done.
+There are several ways you might reasonably traverse a tree, each with different applications.  We'll start with depth-first search, or DFS.  DFS starts at the root of the tree and selects the first child.  If the child has children, it selects the first child again.  When it gets to a node with no children, it backtracks, moving up the tree to the parent node, where it selects the next child if there is one; otherwise it backtracks again.  When it has explored the last child of the root, it's done.
 
 There are two common ways to implement DFS, recursively and iteratively.  The recursive implementation is simple and elegant:
 
@@ -141,18 +141,97 @@ There are two common ways to implement DFS, recursively and iteratively.  The re
 		}
 	}
 
+This method gets invoked on every `Node` in the tree, starting with the root.  If the `Node` it gets is a `TextNode`, it prints the contents.  If the `Node` has any children, it invokes `recursiveDFS` on each one of them in order.
 
-Not done...
+In this example, we print the contents of each `TextNode` before traversing the children, so this is an example of a "pre-order" traversal.  [You can read about "pre-order", "post-order", and "in-order" traversals here](https://en.wikipedia.org/wiki/Tree_traversal).  But for this application, the traversal order doesn't matter because `TextNodes` don't have children.
 
+By making recursive calls, `recursiveDFS` uses the [call stack](https://en.wikipedia.org/wiki/Call_stack) to keep track of the child nodes and process them in the right order.  As an alternative, we can use a `Stack` data structure to keep track of the nodes ourselves; if we do that, we can avoid the recursion and traverse the tree iteratively.
 
+## Stacks in Java
+
+Before we can explain the iterative version of DFS, we have to explain the stack data structure.  We'll start by talking about the general concept of a stack, which we'll call a "stack" with a lowercase "s".  Then we'll talk about two Java implementations of a stack, which are called `Stack` and `Deque`.
+
+A stack is a data structure that is similar to a list in the sense that it is a collection of elements that maintains the order of the elements (unlike a `HashMap`, for example, which is coming up soon).  The primary difference between a stack and a list is that the stack provides fewer methods.  In the usual convention is provides:
+
+* `push`: which adds an element to the stack.
+* `pop`: which removes the element most recently added.
+* `peek`: which returns the most recent element without modifying the stack.
+* `isEmpty`: which indicates whether the stack is empty.
+
+Because `pop` always returns the most recently-added element, a stack is sometimes called a "LIFO", which stands for "last in, first out".  An alternative to a stack is a "queue", which returns elements in the same order they are added; that is, "first in, first out", or FIFO.
+
+At first it might not be obvious why stacks and queues are useful: they don't provide any capabilities that aren't provided by lists; in fact, they provide fewer capabilities.
+
+So why not use lists for everything?  There are two reasons:
+
+1.  If you limit yourself to a small set of methods — that is, a small API — your code will be more readable and less error-prone.  For example, if you use a list to represent a stack, you might accidentally remove an element in the wrong order.  With the stack API, this kind of mistake is literally impossible.  And the best way to avoid errors it to make them impossible.
+
+2.  If a data structure provides a small API, it is easier to implement efficiently.  For example, a simple way to implement a stack is a singly-linked list.  When we push an element onto the stack, we can add it to the beginning of the list; when we pop an element, we remove it from the beginning.  For a linked list, adding and removing from the beginning are constant time operations, so this implementation is efficient.  Conversely, big APIs are harder to implement efficiently.
+
+To implement a stack in Java, you have three options:
+
+1.   Go ahead and use an `ArrayList` or `LinkedList`.  If you use an `ArrayList`, be sure to add and remove from the *end*, which is a constant time operation.
+2.   Java provides a class called `Stack` that provides the standard set of stack methods.  But this class is an old part of Java: it provides an API that is not consistent with the Java Collections Framework (which came later), and it does not handle synchronization as well as more recent classes.
+3.   Probably the best choice is to use one of the implementations of the `Deque` interface, like `ArrayDeque`.
+
+"Deque" stands for "double-ended queue" and it's supposed to be pronounced "deck" (although some people say "deek").  In Java, the `Deque` interface provides `push`, `pop`, `peek`, and `isEmpty`, so you can use a `Deque` as a stack.  It provides other methods [you can read about here](https://docs.oracle.com/javase/7/docs/api/java/util/Deque.html), but we won't use them for now.
+
+## Iterative DFS
+
+Here is an iterative version of DFS that uses an `ArrayDeque` to represent a stack of `Node` objects:
+
+```java
+	private static void iterativeDFS(Node root) {
+		Deque<Node> stack = new ArrayDeque<Node>();
+		stack.push(root);
+
+		while (!stack.isEmpty()) {
+			Node node = stack.pop();
+			if (node instanceof TextNode) {
+				System.out.print(node);
+			}
+
+			List<Node> nodes = new ArrayList<Node>(node.childNodes());
+			Collections.reverse(nodes);
+			
+			for (Node child: nodes) {
+				stack.push(child);
+			}
+		}
+	}
+```
+
+The parameter, `root`, is the root of the tree we want to traverse, so we start by creating the stack and pushing the root onto it.
+
+The loop continues until the stack it empty.  Each time through, it pops a `Node` off the stack.  If it's a `TextNode`, it prints the contents.  Then it pushes the children onto the stack.  In order to process the children in the right order, we have to push them onto the stack in reverse order; we do that by copying the children into an `ArrayList`, reversing the elements in place, and then iterating through the reversed `ArrayList`.
+
+One advantage of the iterative version of DFS is that it it easier to implement as a Java `Iterator`; you'll find out how in the next lab.
+
+But first, one last note about the `Deque` interface: in addition to `ArrayDeque`, Java provides another implementation of `Deque`, `LinkedList`.  We avoided mentioning it earlier, because it can be a little confusing, but `LinkedList` implements both interface, `List` and `Deque`.  Which interface you get, depends on how you use it.  For example, if you assign a `LinkedList` object to a `Deque` variable, like this:
+
+    Deqeue<Node> deque = new LinkedList<Node>();
+    
+You will be able to use the methods in the `Deque` interface, but not all methods in the `List` interface.  If you assign it like this:
+
+    List<Node> deque = new LinkedList<Node>();
+
+You'll be able to use `List` methods but not all `Deque` methods.  And if you assign it like this:
+
+    LinkedList<Node> deque = new LinkedList<Node>();
+
+You could use *all* the methods.  But if you combine methods from different interfaces, your code will be less readable and more error-prone.
 
 
 ## Resources
 
 
+[Web search engine](https://en.wikipedia.org/wiki/Web_search_engine): Wikipedia.
 
+[HyperText Markup Language](https://en.wikipedia.org/wiki/HTML): Wikipedia
 
+[`Element`](http://jsoup.org/apidocs/org/jsoup/nodes/Element.html): jsoup documentation [`Elements`](http://jsoup.org/apidocs/org/jsoup/select/Elements.html): jsoup documentation [`Node`](http://jsoup.org/apidocs/org/jsoup/nodes/Node.html): jsoup documentation
 
+[Tree traversal](https://en.wikipedia.org/wiki/Tree_traversal): Wikipedia
+[Call stack](https://en.wikipedia.org/wiki/Call_stack): Wikipedia
 
- 
-
+[Deque interface](https://docs.oracle.com/javase/7/docs/api/java/util/Deque.html): Java documentation
