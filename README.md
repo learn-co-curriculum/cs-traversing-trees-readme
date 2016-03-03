@@ -61,7 +61,7 @@ The relationships between the nodes are determined by the structure of the docum
 
 The `<head>` node has one child, `<title>`, and the `<body>` node has one child, <p> (which stands for "paragraph).  The following figure represents this tree graphically:
 
-![alt tag]()
+![alt tag](https://raw.githubusercontent.com/learn-co-curriculum/cs-traversing-trees-readme/wip-master/DOMtree01.png?token=ABy37R_5y5h5-8L0T3nru9p8NYCijWszks5W4b25wA%3D%3D)
 
 Each node contains links to its children; in addition, each node contains a link to its **parent**, so from any node it is possible to navigate up and down the tree.  The DOM tree for real pages is usually more complicated than this example.
 
@@ -69,7 +69,7 @@ Most web browsers provide tools for inspecting the DOM of the page you are viewi
 
 Here is a screenshot of the DOM for [the Wikipedia page on Java](https://en.wikipedia.org/wiki/Java_(programming_language)).
 
-![alt tag]()
+![alt tag](https://raw.githubusercontent.com/learn-co-curriculum/cs-traversing-trees-readme/wip-master/DOMinspector.png?token=ABy37cGnvFp_JdomOGIummeoEFpVyKr0ks5W4b3TwA%3D%3D)
 
 The element that's highlighted is the first paragraph of the main text of the article, which is contained in a `<div>` element with `id="mw-content-text"`.  We'll use this element id to identify the main text of each article we download.
 
