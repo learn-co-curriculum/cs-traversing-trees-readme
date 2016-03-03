@@ -1,6 +1,10 @@
 tags:
-  - a tag
+  - Web search engine
+  - Web crawler
+  - Depth-first search
+  - LIFO stack
+  - Deque interface
 languages:
-  - a language
+  - Java
 resources: 
-  - 0
+  - 8
