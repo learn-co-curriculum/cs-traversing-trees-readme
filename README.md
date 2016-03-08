@@ -50,7 +50,7 @@ When you download a web page, the contents are written in [HyperText Markup Lang
         <p>Hello world!</p>
       </body>
     </html>
-    
+
 The phrases "This is a title" and "Hello world!" are the text that actually appears on the page; the other elements are **tags** that indicate how the text should be displayed.
 
 When our Crawler downloads a page, it will need to parse the HTML in order to extract the text and find the links.  To do that, we'll use **jsoup**, which is an open-source Java library that downloads and parses HTML.
@@ -79,17 +79,17 @@ The element that's highlighted is the first paragraph of the main text of the ar
 Jsoup makes it easy to download and parse web pages, and to navigate the DOM tree.  Here's an example:
 
 		String url = "https://en.wikipedia.org/wiki/Java_(programming_language)";
-		
+
 		// download and parse the document
 		Connection conn = Jsoup.connect(url);
 		Document doc = conn.get();
-		
+
 		// select the content text and pull out the paragraphs.
 		Element content = doc.getElementById("mw-content-text");
-		
+
 		// TODO: avoid selecting paragraphs from sidebars and boxouts
 		Elements paras = content.select("p");
-		
+
 `Jsoup.connect` takes a URL as a String and makes a connection to the web server; the `get` method downloads the HTML, parses it, and returns a `Document` object, which represents the DOM.
 
 `Document` provides lots of helpful methods for navigating the tree and selecting nodes.  In fact, it provides so many methods, it can be confusing.  This example demonstrates two ways to select nodes:
@@ -97,14 +97,14 @@ Jsoup makes it easy to download and parse web pages, and to navigate the DOM tre
 *  `getElementById` takes a String and searches the tree for an element that has a matching "id" field.  In this example, it selects the node `<div id="mw-content-text" lang="en" dir="ltr" class="mw-content-ltr">`, which seems to appear on every Wikipedia page to identify the `<div>` element that contains the content of the page, as opposed to the navigation sidebar and other elements.
 
     The return value from `getElementById` is an `Element` object that represents this `<div>` and contains the elements in the `<div>` as children (and grandchildren, etc.)
-    
-*   `select` takes a string, traverses the tree, and returns all the elements with tags that match the String.  In this example, it returns all `<p>` tags that appear in `contents`.
+
+*   `select` takes a string, traverses the tree, and returns all the elements with tags that match the String.  In this example, it returns all `<p>` tags that appear in `content`.
 
     The return value is an `Elements` object, which is a Collection that contains multiple elements.
 
 Before you go on, you should skim the documentation of these classes so you know what they can do.  The most important classes are: [`Element`](http://jsoup.org/apidocs/org/jsoup/nodes/Element.html), [`Elements`](http://jsoup.org/apidocs/org/jsoup/select/Elements.html), and [`Node`](http://jsoup.org/apidocs/org/jsoup/nodes/Node.html).
 
-It's easy to get `Node` and `Element` confused: `Node` is the parent class of `Element`, so every `Element` is a `Node`, but not every `Node` is an `Element`.  Other kinds of node include `TextNode` (which we will use soon), `DataNode`, and `Comment`.
+It's easy to get `Node` and `Element` confused: `Node` is the parent class of `Element`, so every `Element` is a `Node`, but not every `Node` is an `Element`.  Other kinds of Nodes include `TextNode` (which we will use soon), `DataNode`, and `Comment`.
 
 
 ## Iterating through the DOM
@@ -113,14 +113,14 @@ To make your life a little easier, we've provided a class called `WikiNodeIterab
 
 		Elements paras = content.select("p");
 		Element firstPara = paras.get(0);
-		
+
 		Iterable<Node> iter = new WikiNodeIterable(firstPara);
 		for (Node node: iter) {
 			if (node instanceof TextNode) {
 				System.out.print(node);
 			}
 		}
-		
+
 This example picks up where the previous one leaves off.  It selects the first paragraph in `paras` and the creates a `WikiNodeIterable`, which implements `Iterable<Node>`.  The `for` loops iterates the nodes in the tree using a "depth first search", which produces the nodes in the order they would appear on the page.
 
 In this example, we print a `Node` only if it is a `TextNode` and ignore other types of `Node`, specifically the `Element` objects that represent tags.  The result is the plain text of the HTML paragraph without any markup.  The output is:
@@ -198,7 +198,7 @@ Here is an iterative version of DFS that uses an `ArrayDeque` to represent a sta
 
 			List<Node> nodes = new ArrayList<Node>(node.childNodes());
 			Collections.reverse(nodes);
-			
+
 			for (Node child: nodes) {
 				stack.push(child);
 			}
@@ -213,7 +213,7 @@ The loop continues until the stack it empty.  Each time through, it pops a `Node
 One advantage of the iterative version of DFS is that it it easier to implement as a Java `Iterator`; you'll find out how in the next lab.  But first, one last note about the `Deque` interface: in addition to `ArrayDeque`, Java provides another implementation of `Deque`, our old friend `LinkedList`.  We avoided mentioning it earlier, because it might seem weird, but `LinkedList` implements both interfaces, `List` and `Deque`.  Which interface you get depends on how you use it.  For example, if you assign a `LinkedList` object to a `Deque` variable, like this:
 
     Deqeue<Node> deque = new LinkedList<Node>();
-    
+
 You can use the methods in the `Deque` interface, but not all methods in the `List` interface.  If you assign it to a `List` variable, like this:
 
     List<Node> deque = new LinkedList<Node>();
