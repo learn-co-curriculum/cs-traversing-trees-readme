@@ -14,7 +14,7 @@ This README introduces the application we will develop during the upcoming units
 
 At the end of each unit, you will have a chance to work on an application that's a bit more substantial than a lab.  You will write more code, and you'll have to make more design decisions, rather than just filling in methods.
 
-By the time we get to the end of the track, you will have built a simple **web search engine**, which is a tool, like Google Search and Bing, that takes a set of "search terms" and returns a list of web pages that are relevant to those terms (we'll discuss what "relevant" means later).  If you are not familiar with search engines, [You can read more about search engines here](https://en.wikipedia.org/wiki/Web_search_engine), but we'll explain what you need as we go along.
+By the time we get to the end of this track, you will have built a simple **Web search engine**, which is a tool, like Google Search and Bing, that takes a set of "search terms" and returns a list of web pages that are relevant to those terms (we'll discuss what "relevant" means later).  If you are not familiar with search engines, [you can read more here](https://en.wikipedia.org/wiki/Web_search_engine), but we'll explain what you need as we go along.
 
 The essential pieces of a search engine are:
 
@@ -24,7 +24,7 @@ The essential pieces of a search engine are:
 
 *  Retrieval: And we'll need a way to collect results from the Index and identify pages that are most relevant to the search terms.
 
-We'll start with the Crawler; the goal of the Crawler is to discover and download a set of web pages.  For search engines like Google and Bing, the goal is to find *all* web pages, but often Crawlers are limited to a smaller domain.  In our case, we will only read pages from Wikipedia.
+We'll start with the Crawler; the goal of a Crawler is to discover and download a set of web pages.  For search engines like Google and Bing, the goal is to find *all* web pages, but often Crawlers are limited to a smaller domain.  In our case, we will only read pages from Wikipedia.
 
 As a first step, we'll build a Crawler that reads a Wikipedia page, finds the first link, follows the link to another page, and repeats.  We will use this Crawler to test the "Getting to Philosophy" conjecture, which states:
 
@@ -34,7 +34,7 @@ This conjecture is [stated on this Wikipedia page](https://en.wikipedia.org/wiki
 
 Testing the conjecture will allow us to build the basic pieces of a Crawler without having to crawl the entire web, or even all of Wikipedia.  And we think the exercise is kind of fun!
 
-After the second unit, we'll work on the Indexer, and then we'll get to the Retriever.
+In the next unit, we'll work on the Indexer, and then we'll get to the Retriever.
 
 
 ## Parsing HTML
@@ -94,22 +94,20 @@ Jsoup makes it easy to download and parse web pages, and to navigate the DOM tre
 
 `Document` provides lots of helpful methods for navigating the tree and selecting nodes.  In fact, it provides so many methods, it can be confusing.  This example demonstrates two ways to select nodes:
 
-*  `getElementById` takes a String and searches the tree for an element that has a matching "id" field.  In this example, it selects the node `<div id="mw-content-text" lang="en" dir="ltr" class="mw-content-ltr">`, which seems to appear on every Wikipedia page to identify the `<div>` element that contains the content of the page, as opposed to the navigation sidebar and other elements.
+*  `getElementById` takes a String and searches the tree for an element that has a matching "id" field.  Here it selects the node `<div id="mw-content-text" lang="en" dir="ltr" class="mw-content-ltr">`, which appears on every Wikipedia page to identify the `<div>` element that contains the main text of the page, as opposed to the navigation sidebar and other elements.
 
-    The return value from `getElementById` is an `Element` object that represents this `<div>` and contains the elements in the `<div>` as children (and grandchildren, etc.)
+    The return value from `getElementById` is an `Element` object that represents this `<div>` and contains the elements in the `<div>` as children, grandchildren, etc.
 
-*   `select` takes a string, traverses the tree, and returns all the elements with tags that match the String.  In this example, it returns all `<p>` tags that appear in `content`.
-
-    The return value is an `Elements` object, which is a Collection that contains multiple elements.
+*   `select` takes a String, traverses the tree, and returns all the elements with tags that match the String.  In this example, it returns all paragraph tags that appear in `content`.  The return value is an `Elements` object, which is a Collection that contains multiple elements.
 
 Before you go on, you should skim the documentation of these classes so you know what they can do.  The most important classes are: [`Element`](http://jsoup.org/apidocs/org/jsoup/nodes/Element.html), [`Elements`](http://jsoup.org/apidocs/org/jsoup/select/Elements.html), and [`Node`](http://jsoup.org/apidocs/org/jsoup/nodes/Node.html).
 
-It's easy to get `Node` and `Element` confused: `Node` is the parent class of `Element`, so every `Element` is a `Node`, but not every `Node` is an `Element`.  Other kinds of Nodes include `TextNode` (which we will use soon), `DataNode`, and `Comment`.
+It's easy to get `Node` and `Element` confused: `Node` is the superclass of `Element`, so every `Element` is a `Node`, but not every `Node` is an `Element`.  Other kinds of Nodes include `TextNode` (which we will use soon), `DataNode`, and `Comment`.
 
 
 ## Iterating through the DOM
 
-To make your life a little easier, we've provided a class called `WikiNodeIterable` that lets you iterate through the nodes in a DOM tree.  Here an example that shows how to use it:
+To make your life easier, we've provided a class called `WikiNodeIterable` that lets you iterate through the nodes in a DOM tree.  Here an example that shows how to use it:
 
 		Elements paras = content.select("p");
 		Element firstPara = paras.get(0);
@@ -121,7 +119,7 @@ To make your life a little easier, we've provided a class called `WikiNodeIterab
 			}
 		}
 
-This example picks up where the previous one leaves off.  It selects the first paragraph in `paras` and the creates a `WikiNodeIterable`, which implements `Iterable<Node>`.  The `for` loops iterates the nodes in the tree using a "depth first search", which produces the nodes in the order they would appear on the page.
+This example picks up where the previous one leaves off.  It selects the first paragraph in `paras` and the creates a `WikiNodeIterable`, which implements `Iterable<Node>`.  The `for` loop iterates the nodes in the tree using a "depth first search", which produces the nodes in the order they would appear on the page.
 
 In this example, we print a `Node` only if it is a `TextNode` and ignore other types of `Node`, specifically the `Element` objects that represent tags.  The result is the plain text of the HTML paragraph without any markup.  The output is:
 
@@ -147,15 +145,16 @@ There are two common ways to implement DFS, recursively and iteratively.  The re
 
 This method gets invoked on every `Node` in the tree, starting with the root.  If the `Node` it gets is a `TextNode`, it prints the contents.  If the `Node` has any children, it invokes `recursiveDFS` on each one of them in order.
 
-In this example, we print the contents of each `TextNode` before traversing the children, so this is an example of a "pre-order" traversal.  [You can read about "pre-order", "post-order", and "in-order" traversals here](https://en.wikipedia.org/wiki/Tree_traversal).  But for this application, the traversal order doesn't matter because `TextNodes` don't have children.
+In this example, we print the contents of each `TextNode` before traversing the children, so this is an example of a "pre-order" traversal.  [You can read about "pre-order", "post-order", and "in-order" traversals here](https://en.wikipedia.org/wiki/Tree_traversal).  For this application, the traversal order doesn't matter.
 
 By making recursive calls, `recursiveDFS` uses the [call stack](https://en.wikipedia.org/wiki/Call_stack) to keep track of the child nodes and process them in the right order.  As an alternative, we can use a stack data structure to keep track of the nodes ourselves; if we do that, we can avoid the recursion and traverse the tree iteratively.
+
 
 ## Stacks in Java
 
 Before we can explain the iterative version of DFS, we have to explain the stack data structure.  We'll start with the general concept of a stack, which we'll call a "stack" with a lowercase "s".  Then we'll talk about two Java implementations of a stack, which are called `Stack` and `Deque`.
 
-A stack is a data structure that is similar to a list: it is a collection of elements that maintains the order of the elements.  The primary difference between a stack and a list is that the stack provides fewer methods.  In the usual convention, it provides:
+A stack is a data structure that is similar to a list: it is a collection that maintains the order of the elements.  The primary difference between a stack and a list is that the stack provides fewer methods.  In the usual convention, it provides:
 
 * `push`: which adds an element to the stack.
 * `pop`: which removes the element most recently added.
@@ -172,13 +171,13 @@ It might not be obvious why stacks and queues are useful: they don't provide any
 
 To implement a stack in Java, you have three options:
 
-1.   Go ahead and use an `ArrayList` or `LinkedList`.  If you use an `ArrayList`, be sure to add and remove from the *end*, which is a constant time operation.  And be careful not to add elements in the wrong place or remove them in the wrong order.
+1.   Go ahead and use `ArrayList` or `LinkedList`.  If you use `ArrayList`, be sure to add and remove from the *end*, which is a constant time operation.  And be careful not to add elements in the wrong place or remove them in the wrong order.
 
-2.   Java provides a class called `Stack` that provides the standard set of stack methods.  But this class is an old part of Java: it is not consistent with the Java Collections Framework (which came later), and it does not handle synchronization as well as more recent classes.
+2.   Java provides a class called `Stack` that provides the standard set of stack methods.  But this class is an old part of Java: it is not consistent with the Java Collections Framework, which came later, and it does not handle synchronization as well as more recent classes.
 
 3.   Probably the best choice is to use one of the implementations of the `Deque` interface, like `ArrayDeque`.
 
-"Deque" stands for "double-ended queue" and it's pronounced "deck" (although some people say "deek").  In Java, the `Deque` interface provides `push`, `pop`, `peek`, and `isEmpty`, so you can use a `Deque` as a stack.  It provides other methods [you can read about here](https://docs.oracle.com/javase/7/docs/api/java/util/Deque.html), but we won't use them for now.
+"Deque" stands for "double-ended queue"; it's supposed to be pronounced "deck", but some people say "deek".  In Java, the `Deque` interface provides `push`, `pop`, `peek`, and `isEmpty`, so you can use a `Deque` as a stack.  It provides other methods [you can read about here](https://docs.oracle.com/javase/7/docs/api/java/util/Deque.html), but we won't use them for now.
 
 
 ## Iterative DFS
@@ -210,7 +209,7 @@ The parameter, `root`, is the root of the tree we want to traverse, so we start 
 
 The loop continues until the stack it empty.  Each time through, it pops a `Node` off the stack.  If it gets a `TextNode`, it prints the contents.  Then it pushes the children onto the stack.  In order to process the children in the right order, we have to push them onto the stack in reverse order; we do that by copying the children into an `ArrayList`, reversing the elements in place, and then iterating through the reversed `ArrayList`.
 
-One advantage of the iterative version of DFS is that it it easier to implement as a Java `Iterator`; you'll find out how in the next lab.  But first, one last note about the `Deque` interface: in addition to `ArrayDeque`, Java provides another implementation of `Deque`, our old friend `LinkedList`.  We avoided mentioning it earlier, because it might seem weird, but `LinkedList` implements both interfaces, `List` and `Deque`.  Which interface you get depends on how you use it.  For example, if you assign a `LinkedList` object to a `Deque` variable, like this:
+One advantage of the iterative version of DFS is that it it easier to implement as a Java `Iterator`; you'll find out how in the next lab.  But first, one last note about the `Deque` interface: in addition to `ArrayDeque`, Java provides another implementation of `Deque`, our old friend `LinkedList`.  `LinkedList` implements both interfaces, `List` and `Deque`.  Which interface you get depends on how you use it.  For example, if you assign a `LinkedList` object to a `Deque` variable, like this:
 
     Deqeue<Node> deque = new LinkedList<Node>();
 
@@ -218,7 +217,7 @@ You can use the methods in the `Deque` interface, but not all methods in the `Li
 
     List<Node> deque = new LinkedList<Node>();
 
-You'll can use `List` methods but not all `Deque` methods.  And if you assign it like this:
+You can use `List` methods but not all `Deque` methods.  And if you assign it like this:
 
     LinkedList<Node> deque = new LinkedList<Node>();
 
