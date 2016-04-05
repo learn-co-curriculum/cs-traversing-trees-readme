@@ -59,7 +59,7 @@ The result of parsing HTML is a Document Object Model tree or **DOM tree**, that
 
 The relationships between the nodes are determined by the structure of the document.  In the example above, the first node, called the **root**, is the `<html>` tag, which contains links to the two nodes it contains, `<head>` and `<body>`; these nodes are the **children** of the root node.
 
-The `<head>` node has one child, `<title>`, and the `<body>` node has one child, <p> (which stands for "paragraph).  The following figure represents this tree graphically:
+The `<head>` node has one child, `<title>`, and the `<body>` node has one child, `<p>` (which stands for "paragraph).  The following figure represents this tree graphically:
 
 ![DOM tree](https://curriculum-content.s3.amazonaws.com/javacs/cs-traversing-trees-readme/DOMtree01.png)
 
@@ -107,7 +107,7 @@ It's easy to get `Node` and `Element` confused: `Node` is the superclass of `Ele
 
 ## Iterating through the DOM
 
-To make your life easier, we've provided a class called `WikiNodeIterable` that lets you iterate through the nodes in a DOM tree.  Here an example that shows how to use it:
+To make your life easier, we've provided a class called `WikiNodeIterable` that lets you iterate through the nodes in a DOM tree.  Here's an example that shows how to use it:
 
 		Elements paras = content.select("p");
 		Element firstPara = paras.get(0);
@@ -130,7 +130,7 @@ At this point, you know what you need for the next lab, so you can skip ahead.  
 
 ## Depth-first search
 
-There are several ways you might reasonably traverse a tree, each with different applications.  We'll start with "depth-first search", or DFS.  DFS starts at the root of the tree and selects the first child.  If the child has children, it selects the first child again.  When it gets to a node with no children, it backtracks, moving up the tree to the parent node, where it selects the next child if there is one; otherwise it backtracks again.  When it has explored the last child of the root, it's done.
+There are several ways you might reasonably traverse a tree, each with different applications.  We'll start with "depth-first search," or DFS.  DFS starts at the root of the tree and selects the first child.  If the child has children, it selects the first child again.  When it gets to a node with no children, it backtracks, moving up the tree to the parent node, where it selects the next child if there is one; otherwise it backtracks again.  When it has explored the last child of the root, it's done.
 
 There are two common ways to implement DFS, recursively and iteratively.  The recursive implementation is simple and elegant:
 
@@ -156,12 +156,12 @@ Before we can explain the iterative version of DFS, we have to explain the stack
 
 A stack is a data structure that is similar to a list: it is a collection that maintains the order of the elements.  The primary difference between a stack and a list is that the stack provides fewer methods.  In the usual convention, it provides:
 
-* `push`: which adds an element to the stack.
-* `pop`: which removes the element most recently added.
-* `peek`: which returns the most recent element without modifying the stack.
+* `push`: which adds an element to the top of the stack.
+* `pop`: which removes the top-most element from the stack.
+* `peek`: which returns the top-most element without modifying the stack.
 * `isEmpty`: which indicates whether the stack is empty.
 
-Because `pop` always returns the most recently-added element, a stack is also called a "LIFO", which stands for "last in, first out".  An alternative to a stack is a "queue", which returns elements in the same order they are added; that is, "first in, first out", or FIFO.
+Because `pop` always returns the top-most element, a stack is also called a "LIFO", which stands for "last in, first out".  An alternative to a stack is a "queue", which returns elements in the same order they are added; that is, "first in, first out", or FIFO.
 
 It might not be obvious why stacks and queues are useful: they don't provide any capabilities that aren't provided by lists; in fact, they provide fewer capabilities.  So why not use lists for everything?  There are two reasons:
 
