@@ -119,7 +119,7 @@ To make your life easier, we've provided a class called `WikiNodeIterable` that 
 			}
 		}
 
-This example picks up where the previous one leaves off.  It selects the first paragraph in `paras` and the creates a `WikiNodeIterable`, which implements `Iterable<Node>`.  The `for` loop iterates the nodes in the tree using a "depth first search", which produces the nodes in the order they would appear on the page.
+This example picks up where the previous one leaves off.  It selects the first paragraph in `paras` and then creates a `WikiNodeIterable`, which implements `Iterable<Node>`.  The `for` loop iterates the nodes in the tree using a "depth first search", which produces the nodes in the order they would appear on the page.
 
 In this example, we print a `Node` only if it is a `TextNode` and ignore other types of `Node`, specifically the `Element` objects that represent tags.  The result is the plain text of the HTML paragraph without any markup.  The output is:
 
@@ -237,3 +237,5 @@ You can use *all* the methods.  But if you combine methods from different interf
 [Call stack](https://en.wikipedia.org/wiki/Call_stack): Wikipedia
 
 [Deque interface](https://docs.oracle.com/javase/7/docs/api/java/util/Deque.html): Java documentation
+
+<p class='util--hide'>View <a href='https://learn.co/lessons/cs-traversing-trees-readme'>Traversing Trees</a> on Learn.co and start learning to code for free.</p>
